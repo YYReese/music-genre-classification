@@ -10,7 +10,6 @@ The data consists of a total of 518 inputs. In our scenario, each music time ser
 
 Moreover, the chart below indicates that each class has a relatively balanced distribution among the different genres of music. This means that there is not a significant imbalance where one class dominates the dataset, which is important for model training as it helps prevent biases towards certain classes during model training. Therefore, there is no need to use techniques like oversampling or undersampling.
 
-### Summary of Audio Features
 The following table provides a summary of the audio features used in the dataset:
 
 | Name                | Description                                     | Number of Features |
@@ -27,9 +26,52 @@ The following table provides a summary of the audio features used in the dataset
 | tonnetz             | Tonal centroid features (6 features)            | 7*6                |
 | zcr                 | Zero-crossing rate                              | 7                  |
 
-![Training Data](Categories.png)
+![Training Data](/figures/Categories.png)
 *Figure: Counts of individual music genres in the training data*
 
+## Testing accuracy report
+The performances of models considered for a 20% hold-out set are summarized in **Table 1**. We will use this hold-out set as an estimate of the accuracy for the given test set. Among the models, SVM with bagging was selected as the final model for music genre classification. The predicted test accuracy for SVM with bagging is 0.6192, and the estimate of its generalization error under the 0-1 loss is 0.3808.
+
+Despite having the highest accuracy, bagging SVM tends to be computationally intensive. This is due to two rounds of grid search and fitting an SVM for every bootstrapped sample. LDA, QDA, and logistic regression on PCs took little time to fit but produced poor results. Random forest adaboosting and standard sSVM required slightly more time and had moderate performances. CNNs are the most expensive model among those, with an acceptable accuracy. It is worth noting that although SVM itself is not expensive, applying bagging makes it costly.
+
+From the prediction results **Table 3**, for the validation data, we found that pop, experimental, and instrumental music are the hardest to predict, with estimated accuracies of 0.4177, 0.5145, and 0.5364, respectively. These genres are relatively less ambiguously defined, as some rock music is also considered pop (known as pop-rock nowadays). Furthermore, from **Table 2**, we observe that instrumental music has a precision slightly higher than recall, indicating more ambiguity or overlap with other genres. For experimental music, the precision for this class is lower than recall, suggesting that experimental music has less distinct features or overlaps with other classes. However, there is still potential for improvement. Notably, the instrumental genre has an accuracy of only around 40%, significantly lower than other genres. Developing a model capable of addressing this discrepancy could significantly improve the overall accuracy and reduce the generalization error under the 0-1 loss metric.
+
+**Table 1: Testing accuracy summary**
+
+| Model                         | Testing accuracy |
+|-------------------------------|------------------|
+| Logistic regression on PCs | 55.1%            |
+| Random forest                 | 56.2%            |
+| AdaBoosting                   | 52.4%            |
+| Feedforward NN                | 59.42%           |
+| Stacking (RF, Feedforward, CNN, and SVM) | 61.09% |
+| CNN                           | 58.25%           |
+| SVM                           | 60.6%            |
+| Bagging SVM                   | 61.9%            |
+
+**Table 2: Classification Report**
+
+|        | Precision | Recall | F1-score | Support |
+|--------|-----------|--------|----------|---------|
+| Electronic  | 0.59      | 0.61   | 0.60     | 160     |
+| Experimental  | 0.47      | 0.51   | 0.49     | 138     |
+| Folk | 0.66      | 0.65   | 0.65     | 152     |
+| Hip-Hop | 0.69      | 0.75   | 0.72     | 158     |
+|Instrumental | 0.62      | 0.56   | 0.59     | 151     |
+| International | 0.72      | 0.70   | 0.71     | 146     |
+|  Pop | 0.46      | 0.42   | 0.44     | 158     |
+|Rock | 0.64      | 0.66   | 0.65     | 137     |****
 
 
+**Table 3: Validation Accuracy by Genre**
 
+|    Genre        | Validation accuracy |
+|-----------------|---------------------|
+| Electronic      | 0.6025              |
+| Experimental    | 0.5145              |
+| Folk            | 0.6447              |
+| Hip-Hop         | 0.7468              |
+| Instrumental    | 0.5364              |
+| International   | 0.6986              |
+| Pop             | 0.4177              |
+| Rock            | 0.6569              |
