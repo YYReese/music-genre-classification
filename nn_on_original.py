@@ -21,22 +21,6 @@ X_train, X_test, y_train, y_test = train_test_split(X_train_all, y_train_all, te
 X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, random_state=42,test_size=0.15,stratify=y_train)
 
 
-model_ann = keras.models.load_model("./models/Music_Genre_ANN_on_original")
-test_loss, test_acc = model_ann.evaluate(X_test, y_test, verbose=2)
-print('\nTest accuracy:', test_acc)
-
-print("model",model_ann.summary())
-
-# build network topology
-model_ann = keras.Sequential([
-    keras.layers.Dense(800, activation='relu',
-                       kernel_regularizer=keras.regularizers.l2(0.1)
-                       ),
-    keras.layers.Dropout(0.3),
-    # output layer
-    keras.layers.Dense(16, activation='sigmoid')
-])
-
 # build network topology
 model_ann = keras.Sequential([
     keras.layers.Dense(800,activation='relu',
@@ -60,28 +44,10 @@ history = model_ann.fit(X_train, y_train, validation_data=(X_valid, y_valid), ba
 test_loss, test_acc = model_ann.evaluate(X_test, y_test, verbose=2)
 print('\nTest accuracy:', test_acc)
 
+#save the model
 #model_ann.save("./models/Music_Genre_ANN_on_original")
 
-
-def plot_history(history):
-
-    fig, axs = plt.subplots(2)
-
-    # create accuracy sublpot
-    axs[0].plot(history.history["accuracy"], label="train accuracy")
-    axs[0].plot(history.history["val_accuracy"], label="test accuracy")
-    axs[0].set_ylabel("Accuracy")
-    axs[0].legend(loc="lower right")
-    axs[0].set_title("Accuracy eval")
-
-    # create error sublpot
-    axs[1].plot(history.history["loss"], label="train error")
-    axs[1].plot(history.history["val_loss"], label="test error")
-    axs[1].set_ylabel("Error")
-    axs[1].set_xlabel("Epoch")
-    axs[1].legend(loc="upper right")
-    axs[1].set_title("Error eval")
-
-    plt.show()
-
-#plot_history(history)
+# load the saved model
+model_ann = keras.models.load_model("./models/Music_Genre_ANN_on_original")
+test_loss, test_acc = model_ann.evaluate(X_test, y_test, verbose=2)
+print('\nTest accuracy:', test_acc)

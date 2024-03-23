@@ -3,18 +3,16 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-
-
 # Load data
-X_train_all = pd.read_csv('./data/X_train.csv', index_col = 0, header=[0, 1, 2]) # inputs of the training set
-y_train_all = pd.read_csv('./data/y_train.csv', index_col = 0).to_numpy() # outputs of the training set
-X_test = pd.read_csv('./data/X_test.csv', index_col = 0, header=[0, 1, 2]) # inputs of the test set
+X_train_all = pd.read_csv('./data/X_train.csv', index_col = 0, header=[0, 1, 2])
+y_train_all = pd.read_csv('./data/y_train.csv', index_col = 0).to_numpy()
+X_test = pd.read_csv('./data/X_test.csv', index_col = 0, header=[0, 1, 2])
 
 # Scale and format the data
 X_train_all = X_train_all.apply(lambda x: (np.mean(x)-x)/np.std(x),axis=0)
 y_train_all = np.unique(y_train_all, return_inverse=True)[1]
 
-# make tensors
+# make feature dictionary
 features_info = {
     'chroma_cens': {'chromas': 12, 'stats': 7},
     'chroma_cqt': {'chromas': 12, 'stats': 7},
@@ -49,6 +47,7 @@ for feature, info in features_info.items():
         # For features without chromas/bands, directly extract all stats
         features_matrices[feature] = X_train_all.filter(like=feature, axis=1)
 
+# make tensor
 X_train_tensor = np.zeros((6000,74,7))
 i = 0
 for key in features_matrices.keys():
@@ -56,14 +55,10 @@ for key in features_matrices.keys():
   i += 1
 X_train_tensor = (np.array(X_train_tensor))
 
-# split training set
+# split into training validation and testing
 X_train, X_test, y_train, y_test = train_test_split(X_train_tensor, y_train_all, test_size=0.20, random_state=42,stratify=y_train_all)
 X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, random_state=42,test_size=0.15,stratify=y_train)
 
-
-model_cnn = keras.models.load_model("./models/Music_Genre_CNN_on_tensor")
-test_loss, test_acc = model_cnn.evaluate(X_test, y_test, verbose=2)
-print('\nTest accuracy:', test_acc)
 
 
 
@@ -94,8 +89,13 @@ model_cnn.compile(optimizer=optimiser,
 print(model_cnn.summary())
 
 history = model_cnn.fit(X_train, y_train, validation_data=(X_valid, y_valid), batch_size=32, epochs=50)
-
 test_loss, test_acc = model_cnn.evaluate(X_test, y_test, verbose=2)
 print('\nTest accuracy:', test_acc)
 
+#save the model
 #model_cnn.save("./models/Music_Genre_CNN_on_tensor")
+
+# load the saved model
+model_cnn = keras.models.load_model("./models/Music_Genre_CNN_on_tensor")
+test_loss, test_acc = model_cnn.evaluate(X_test, y_test, verbose=2)
+print('\nTest accuracy:', test_acc)

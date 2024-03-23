@@ -6,8 +6,6 @@ from sklearn.model_selection import KFold
 import numpy as np
 import pandas as pd
 
-
-
 # Load data
 X_train_all = pd.read_csv('./data/X_train.csv', index_col = 0, header=[0, 1, 2]) # inputs of the training set
 y_train_all = pd.read_csv('./data/y_train.csv', index_col = 0).to_numpy() # outputs of the training set
@@ -29,12 +27,9 @@ accuracy = accuracy_score(y_test, y_pred)
 
 print('\nTest accuracy:', accuracy)
 
-
 # Save the trained model
 joblib.dump(model_rf, '/Music_Genre_RF')
 
 # Load the saved model
 loaded_model = joblib.load('models/Music_Genre_RF')
 
-# Use the loaded model for predictions
-print("----model loaded")
