@@ -154,7 +154,7 @@ joblib.dump(rf_clf, "./models/rf_clf.joblib")
 
 
 # Load saved base models
-model1 = keras.models.load_model("/content/shared/input/trained_models/Music_Genre_CNN_on_tensor")
+model1 = keras.models.load_model("./models/Music_Genre_CNN_on_tensor")
 model2 = keras.models.load_model("./models/Music_Genre_ANN_on_tensor")
 model3 = joblib.load("./models/rf_clf.joblib")
 model4 = joblib.load("./models/rf_clf.joblib")
@@ -184,6 +184,10 @@ stacked_X_test = np.column_stack((pred1_test, pred2_test,pred3_test,pred4_test))
 
 meta_model = RandomForestClassifier(random_state=4)
 meta_model.fit(stacked_X_train, y_train)
+
+# save the model
+joblib.dump(meta_model, "./models/stacking_clf.joblib")
+
 
 stacked_pred = meta_model.predict(stacked_X_test)
 accuracy = accuracy_score(y_test, stacked_pred)
